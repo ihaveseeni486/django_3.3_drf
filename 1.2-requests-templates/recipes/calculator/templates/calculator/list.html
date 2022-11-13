@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Рецепты</title>
+</head>
+<body>
+<b><p>Список доступных рецептов:</p></b>
+{% for recipy_name, recipy_sett in all_recipies.items %}
+<a href = "{{ recipy_name }}/">{{ recipy_name }}: </a>
+    {% for ingredient, amount in recipy_sett.items %}
+        <div style="text-indent:25px;"><p>{{ ingredient }}: {{ amount }}</p></div>
+    {% empty %}
+        <p>Попался пустой рецепт :(</p>
+    {% endfor %}
+{% empty %}
+    <p>Вообще рецептов не знаю :(</p>
+{% endfor %}
+</body>
+</html>

@@ -2,11 +2,19 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Рецепты</title>
+    {% for recipy_name, recipy_sett in recipe.items %}
+    <title>Рецепт {{recipy_name}}</title>
+    {% empty %}
+    {% endfor %}
 </head>
 <body>
-{% for ingredient, amount in recipe.items %}
-    <p>{{ ingredient }}: {{ amount }}</p>
+{% for recipy_name, recipy_sett in recipe.items %}
+<b><p>{{ recipy_name }}: </p></b>
+    {% for ingredient, amount in recipy_sett.items %}
+        <div style="text-indent:25px;"><p>{{ ingredient }}: {{ amount }}</p></div>
+    {% empty %}
+        <p>Такого рецепта не знаю :(</p>
+    {% endfor %}
 {% empty %}
     <p>Такого рецепта не знаю :(</p>
 {% endfor %}

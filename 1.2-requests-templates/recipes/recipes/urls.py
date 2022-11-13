@@ -15,7 +15,10 @@ Including another URLconf
 """
 
 from django.urls import path
+from calculator.views import recipy_listing, recipy_helper
 
 urlpatterns = [
     # здесь зарегистрируйте вашу view-функцию
+    path('', recipy_listing),
+    path('<str:recipy_name>/', recipy_helper)
 ]
