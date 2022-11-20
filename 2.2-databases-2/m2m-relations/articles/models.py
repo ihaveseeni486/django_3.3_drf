@@ -18,7 +18,7 @@ class Article(models.Model):
     text = models.TextField(verbose_name='Текст')
     published_at = models.DateTimeField(verbose_name='Дата публикации')
     image = models.ImageField(null=True, blank=True, verbose_name='Изображение',)
-    tags = models.ManyToManyField('Tag', through='Scope')
+    tags = models.ManyToManyField('Tag', through='Scope', verbose_name='Тэги')
 
     class Meta:
         verbose_name = 'Статья'
@@ -27,6 +27,9 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
+    def str_tags(self):
+        return ', '.join([scope.tag.name for scope in self.scopes.all()[:3]])
 
 
 class Scope(models.Model):
