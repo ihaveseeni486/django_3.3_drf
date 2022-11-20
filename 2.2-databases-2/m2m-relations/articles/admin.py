@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet
 
-from .models import Article  # , Relationship
+from .models import Article, Tag, Scope
 
 
-class RelationshipInlineFormset(BaseInlineFormSet):
+class ScopeInlineFormset(BaseInlineFormSet):
     def clean(self):
         for form in self.forms:
             # В form.cleaned_data будет словарь с данными
@@ -18,12 +18,20 @@ class RelationshipInlineFormset(BaseInlineFormSet):
         return super().clean()  # вызываем базовый код переопределяемого метода
 
 
-# class RelationshipInline(admin.TabularInline):
-#     model = Relationship
-#     formset = RelationshipInlineFormset
+class ScopeInline(admin.TabularInline):
+    model = Scope
+    formset = ScopeInlineFormset
+    extra = 1
 
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    # inlines = [RelationshipInline]
-    pass
+    list_display = ['title', 'published_at']
+    inlines = [ScopeInline]
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    list_filter = ['name']
+

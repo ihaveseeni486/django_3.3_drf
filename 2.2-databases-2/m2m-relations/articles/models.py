@@ -7,6 +7,7 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
+        ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -29,10 +30,11 @@ class Article(models.Model):
 
 
 class Scope(models.Model):
-    article = models.ForeignKey('Article', on_delete=models.CASCADE, related_name='scopes')
-    tag = models.ForeignKey('Tag', on_delete=models.CASCADE, related_name='scopes')
-    is_main = models.BooleanField()
+    article = models.ForeignKey('Article', on_delete=models.CASCADE, related_name='scopes', verbose_name='Статья')
+    tag = models.ForeignKey('Tag', on_delete=models.CASCADE, related_name='scopes', verbose_name='Тэг')
+    is_main = models.BooleanField(default=False, verbose_name='Основной')
 
     class Meta:
+        verbose_name = 'Тег статьи'
+        verbose_name_plural = 'Теги статей'
         ordering = ['-is_main']
-        # ordering = ['-is_main', '-tag']
