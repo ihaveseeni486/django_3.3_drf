@@ -83,6 +83,8 @@ DATABASES = {
         'NAME': 'netology_django_testing',
         'HOST': '127.0.0.1',
         'PORT': '5432',
+        'USER': 'postgres',
+        'PASSWORD': 'qwerty123456',
     }
 }
 
@@ -124,3 +126,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# REST_FRAMEWORK = {
+#     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+#     'DEFAULT_PARSER_CLASSES': (
+#             'rest_framework.parsers.FormParser',
+#             'rest_framework.parsers.MultiPartParser'
+#          )
+# }
+
+MAX_STUDENTS_PER_COURSE = 20
+
