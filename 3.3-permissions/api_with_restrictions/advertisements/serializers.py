@@ -6,6 +6,8 @@ from advertisements.models import Advertisement
 
 from rest_framework.exceptions import ValidationError
 
+from advertisements.models import AdvertisementStatusChoices
+
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer для пользователя."""
@@ -44,11 +46,12 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         """Метод для валидации. Вызывается при создании и обновлении."""
         # TODO: добавьте требуемую валидацию
         request = self.context["request"]
-        ads_quantity = Advertisement.objects.filter(creator=request.user, status='OPEN').\
+        upd_status = request.data.get('status')
+        ads_quantity = Advertisement.objects.filter(creator=request.user, status=AdvertisementStatusChoices.OPEN).\
             values('status').annotate(the_count=Count("status"))
 
         if request.method in ['POST', 'PATCH', 'PUT']:
             for each in ads_quantity:
-                if each['the_count'] >= 10:
+                if each['the_count'] >= 10 and upd_status is not None and upd_status == AdvertisementStatusChoices.OPEN:
                     raise ValidationError('Ошибка публикации: у Вас 10 или более открытых объявлений')
         return data
