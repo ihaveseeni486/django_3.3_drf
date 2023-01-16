@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.db.models import Count, __all__
 from rest_framework import serializers
 
-from advertisements.models import Advertisement
+from advertisements.models import Advertisement, Favorites
 
 from rest_framework.exceptions import ValidationError
 
@@ -16,6 +16,14 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'first_name',
                   'last_name',)
+
+
+class AdvertisementFavSerializer(serializers.ModelSerializer):
+    """Serializer для избранного объявления."""
+
+    class Meta:
+        model = Favorites
+        fields = __all__
 
 
 class AdvertisementSerializer(serializers.ModelSerializer):

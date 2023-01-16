@@ -3,12 +3,12 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet
 
 from advertisements.filters import AdvertisementFilter
 from advertisements.models import Advertisement, Favorites, AdvertisementStatusChoices
 from advertisements.permissions import IsOwnerOrReadonlyOrIsAdmin
-from advertisements.serializers import AdvertisementSerializer
+from advertisements.serializers import AdvertisementSerializer, AdvertisementFavSerializer
 
 
 class AdvertisementViewSet(ModelViewSet):
@@ -36,8 +36,15 @@ class AdvertisementViewSet(ModelViewSet):
             queryset = queryset | user_drafts
         return queryset
 
+
+class AdvertisementFavViewSet(ModelViewSet):
+    queryset = Advertisement.objects.all()
+    serializer_class = AdvertisementFavSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+
     # просмотр избранного
-    @action(['GET'], detail=False, permission_classes=[IsAuthenticated])
+    @action(methods=['GET'], detail=False, permission_classes=[IsAuthenticated])
     def favorites(self, request):
         user = request.user
         favorite_ids = user.favorites.values_list('advertisement', flat=True)
@@ -45,13 +52,18 @@ class AdvertisementViewSet(ModelViewSet):
         serializer = AdvertisementSerializer(ads, many=True)
         return Response(serializer.data)
 
-    @action(['POST'], detail=True, permission_classes=[IsAuthenticated])
-    def add_to_favorites(self, request, pk=None):
-        advertisement = self.get_object()
+    @action(methods=['POST'], detail=False, permission_classes=[IsAuthenticated])
+    def add_to_favorites(self, request):
+        adv_id = request.data.get("id")
+
+        try:
+            advertisement = Advertisement.objects.get(id=adv_id)
+        except Exception as err:
+            return Response(f'Ошибка добавления в избранное: {err}', status=status.HTTP_400_BAD_REQUEST)
         if advertisement.creator == request.user:
             return Response('Нельзя добавлять в избранное своё объявление', status=status.HTTP_400_BAD_REQUEST)
         elif Favorites.objects.filter(advertisement=advertisement, user=request.user).exists():
             return Response('Объявление уже добавлено в избранное', status=status.HTTP_400_BAD_REQUEST)
         else:
             Favorites.objects.create(advertisement=advertisement, user=request.user)
-            return Response('Объявление добавлено в избранное')
+            return Response('Объявление добавлено в избранное', status=status.HTTP_200_OK)
